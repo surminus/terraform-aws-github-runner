@@ -24,6 +24,12 @@ variable "environment" {
   type        = string
 }
 
+variable "resource_name" {
+  description = "A name used for resources rather than using the environment name"
+  type        = string
+  default     = null
+}
+
 variable "enable_organization_runners" {
   description = "Register runners to organization, instead of repo level"
   type        = bool

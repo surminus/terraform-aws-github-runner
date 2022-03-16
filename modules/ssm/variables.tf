@@ -12,6 +12,12 @@ variable "environment" {
   type        = string
 }
 
+variable "resource_name" {
+  description = "A name used for resources rather than using the environment name"
+  type        = string
+  default     = null
+}
+
 variable "kms_key_arn" {
   description = "Optional CMK Key ARN to be used for Parameter Store."
   type        = string

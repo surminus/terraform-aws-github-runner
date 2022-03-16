@@ -1,6 +1,7 @@
 locals {
-  lambda_zip = var.lambda_zip == null ? "${path.module}/lambdas/runner-binaries-syncer/runner-binaries-syncer.zip" : var.lambda_zip
-  role_path  = var.role_path == null ? "/${var.environment}/" : var.role_path
+  resource_name = var.resource_name != null ? var.resource_name : var.environment
+  lambda_zip    = var.lambda_zip == null ? "${path.module}/lambdas/runner-binaries-syncer/runner-binaries-syncer.zip" : var.lambda_zip
+  role_path     = var.role_path == null ? "/${local.resource_name}/" : var.role_path
   gh_binary_os_label = {
     windows = "win",
     linux   = "linux"
@@ -13,7 +14,7 @@ resource "aws_lambda_function" "syncer" {
   s3_object_version = var.syncer_lambda_s3_object_version != null ? var.syncer_lambda_s3_object_version : null
   filename          = var.lambda_s3_bucket == null ? local.lambda_zip : null
   source_code_hash  = var.lambda_s3_bucket == null ? filebase64sha256(local.lambda_zip) : null
-  function_name     = "${var.environment}-syncer"
+  function_name     = "${local.resource_name}-syncer"
   role              = aws_iam_role.syncer_lambda.arn
   handler           = "index.handler"
   runtime           = "nodejs14.x"
@@ -63,7 +64,7 @@ resource "aws_cloudwatch_log_group" "syncer" {
 }
 
 resource "aws_iam_role" "syncer_lambda" {
-  name                 = "${var.environment}-action-syncer-lambda-role"
+  name                 = "${local.resource_name}-action-syncer-lambda-role"
   assume_role_policy   = data.aws_iam_policy_document.lambda_assume_role_policy.json
   path                 = local.role_path
   permissions_boundary = var.role_permissions_boundary
@@ -92,7 +93,7 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 }
 
 resource "aws_iam_role_policy" "lambda_logging" {
-  name = "${var.environment}-lambda-logging-policy-syncer"
+  name = "${local.resource_name}-lambda-logging-policy-syncer"
   role = aws_iam_role.syncer_lambda.id
 
   policy = templatefile("${path.module}/policies/lambda-cloudwatch.json", {
@@ -101,7 +102,7 @@ resource "aws_iam_role_policy" "lambda_logging" {
 }
 
 resource "aws_iam_role_policy" "syncer" {
-  name = "${var.environment}-lambda-syncer-s3-policy"
+  name = "${local.resource_name}-lambda-syncer-s3-policy"
   role = aws_iam_role.syncer_lambda.id
 
   policy = templatefile("${path.module}/policies/lambda-syncer.json", {
@@ -110,7 +111,7 @@ resource "aws_iam_role_policy" "syncer" {
 }
 
 resource "aws_cloudwatch_event_rule" "syncer" {
-  name                = "${var.environment}-syncer-rule"
+  name                = "${local.resource_name}-syncer-rule"
   schedule_expression = var.lambda_schedule_expression
   tags                = var.tags
 }

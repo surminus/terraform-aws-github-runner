@@ -34,6 +34,12 @@ variable "environment" {
   type        = string
 }
 
+variable "resource_name" {
+  description = "A name used for resources rather than using the environment name"
+  type        = string
+  default     = null
+}
+
 variable "s3_bucket_runner_binaries" {
   type = object({
     arn = string

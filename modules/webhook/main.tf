@@ -1,11 +1,12 @@
 locals {
+  resource_name    = var.resource_name != null ? var.resource_name : var.environment
   webhook_endpoint = "webhook"
-  role_path        = var.role_path == null ? "/${var.environment}/" : var.role_path
+  role_path        = var.role_path == null ? "/${local.resource_name}/" : var.role_path
   lambda_zip       = var.lambda_zip == null ? "${path.module}/lambdas/webhook/webhook.zip" : var.lambda_zip
 }
 
 resource "aws_apigatewayv2_api" "webhook" {
-  name          = "${var.environment}-github-action-webhook"
+  name          = "${local.resource_name}-github-action-webhook"
   protocol_type = "HTTP"
   tags          = var.tags
 }

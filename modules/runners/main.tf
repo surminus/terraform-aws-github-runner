@@ -6,10 +6,12 @@ locals {
     var.tags,
   )
 
+  resource_name = var.resource_name != null ? var.resource_name : var.environment
+
   name_sg               = var.overrides["name_sg"] == "" ? local.tags["Name"] : var.overrides["name_sg"]
   name_runner           = var.overrides["name_runner"] == "" ? local.tags["Name"] : var.overrides["name_runner"]
-  role_path             = var.role_path == null ? "/${var.environment}/" : var.role_path
-  instance_profile_path = var.instance_profile_path == null ? "/${var.environment}/" : var.instance_profile_path
+  role_path             = var.role_path == null ? "/${local.resource_name}/" : var.role_path
+  instance_profile_path = var.instance_profile_path == null ? "/${local.resource_name}/" : var.instance_profile_path
   lambda_zip            = var.lambda_zip == null ? "${path.module}/lambdas/runners/runners.zip" : var.lambda_zip
   userdata_template     = var.userdata_template == null ? local.default_userdata_template[var.runner_os] : var.userdata_template
   kms_key_arn           = var.kms_key_arn != null ? var.kms_key_arn : ""
@@ -54,7 +56,7 @@ data "aws_ami" "runner" {
 }
 
 resource "aws_launch_template" "runner" {
-  name = "${var.environment}-action-runner"
+  name = "${local.resource_name}-action-runner"
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings != null ? var.block_device_mappings : []
@@ -143,7 +145,7 @@ resource "aws_launch_template" "runner" {
 
 resource "aws_security_group" "runner_sg" {
   count       = var.enable_managed_runner_security_group ? 1 : 0
-  name_prefix = "${var.environment}-github-actions-runner-sg"
+  name_prefix = "${local.resource_name}-github-actions-runner-sg"
   description = "Github Actions Runner security group"
 
   vpc_id = var.vpc_id
