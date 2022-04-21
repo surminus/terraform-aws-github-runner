@@ -19,15 +19,10 @@ variable "tags" {
   default     = {}
 }
 
-variable "environment" {
-  description = "A name that identifies the environment, used as prefix and for tagging."
+variable "prefix" {
+  description = "The prefix used for naming resources"
   type        = string
-}
-
-variable "resource_name" {
-  description = "A name used for resources rather than using the environment name"
-  type        = string
-  default     = null
+  default     = "github-actions"
 }
 
 variable "enable_organization_runners" {

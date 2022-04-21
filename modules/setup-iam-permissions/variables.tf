@@ -1,6 +1,7 @@
-variable "environment" {
-  description = "A name that identifies the environment, used as prefix and for tagging."
+variable "prefix" {
+  description = "The prefix used for naming resources"
   type        = string
+  default     = "github-actions"
 }
 
 variable "namespaces" {
