@@ -14,13 +14,13 @@ variable "subnet_ids" {
 }
 
 variable "tags" {
-  description = "Map of tags that will be added to created resources. By default resources will be tagged with name and environment."
+  description = "Map of tags that will be added to created resources. By default resources will be tagged with the name."
   type        = map(string)
   default     = {}
 }
 
 variable "environment" {
-  description = "A name that identifies the environment, used as prefix and for tagging."
+  description = "DEPRECATED: A name that identifies the environment, used as prefix and for tagging."
   type        = string
   default     = null
 
@@ -142,13 +142,13 @@ variable "role_permissions_boundary" {
 }
 
 variable "role_path" {
-  description = "The path that will be added to role path for created roles, if not set the environment name will be used."
+  description = "The path that will be added to role path for created roles, if not set the prefix will be used."
   type        = string
   default     = null
 }
 
 variable "instance_profile_path" {
-  description = "The path that will be added to the instance_profile, if not set the environment name will be used."
+  description = "The path that will be added to the instance_profile, if not set the prefix will be used."
   type        = string
   default     = null
 }
